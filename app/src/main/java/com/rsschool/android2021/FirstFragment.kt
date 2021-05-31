@@ -5,8 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.google.android.material.snackbar.Snackbar
+import java.lang.NumberFormatException
 
 class FirstFragment : Fragment() {
 
@@ -29,11 +32,36 @@ class FirstFragment : Fragment() {
         val result = arguments?.getInt(PREVIOUS_RESULT_KEY)
         previousResult?.text = "Previous result: ${result.toString()}"
 
-        // TODO: val min = ...
-        // TODO: val max = ...
+        val textMin:EditText = view.findViewById(R.id.min_value)
+        val textMax:EditText=view.findViewById(R.id.max_value)
 
         generateButton?.setOnClickListener {
-            // TODO: send min and max to the SecondFragment
+            val min:Int
+            val max:Int
+            try {
+                min=textMin.text.toString().toInt()
+            }catch (nfe: NumberFormatException){
+                Snackbar.make(view,"Неверное значение для нижней границы.",
+                    Snackbar.LENGTH_SHORT)
+                    .show()
+                return@setOnClickListener
+            }
+            try {
+                max=textMax.text.toString().toInt()
+            }catch (nfe: NumberFormatException){
+                Snackbar.make(view,"Неверное значение для верхней границы.",
+                    Snackbar.LENGTH_SHORT)
+                    .show()
+                return@setOnClickListener
+            }
+            if(min>=max){
+                Snackbar.make(view,"Нижняя граница должна быть меньше верхней.",
+                    Snackbar.LENGTH_SHORT)
+                    .show()
+                return@setOnClickListener
+            }
+            fun Fragment.mainActivity() = requireActivity() as MainActivity
+            mainActivity().openSecondFragment(min, max)
         }
     }
 
